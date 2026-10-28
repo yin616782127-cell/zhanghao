@@ -1,0 +1,120 @@
+:root {
+  color: #1d2b36;
+  background: #f3f5f7;
+  font-family: "WenQuanYi Micro Hei", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body { background: #f3f5f7; }
+
+.logo-block {
+  padding: 16px 16px 12px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo-block .mark {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #8fd0cb;
+}
+
+.logo-block .name {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.logo-block .sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  color: #14324a;
+}
+
+.page-head p {
+  margin: 4px 0 0;
+  color: #667887;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.stat {
+  background: #fff;
+  border: 1px solid #e6ebf0;
+  border-top: 3px solid #0f6e6b;
+  border-radius: 4px;
+  padding: 12px 14px;
+  min-height: 86px;
+}
+
+.stat.navy { border-top-color: #143f66; }
+.stat.gold { border-top-color: #b8860b; }
+.stat.red { border-top-color: #c2453a; }
+
+.stat-label { color: #667887; font-size: 12px; }
+.stat-value { margin-top: 4px; font-size: 26px; line-height: 1.2; color: #14324a; font-weight: 650; }
+.stat-extra { margin-top: 4px; color: #7d8b96; font-size: 12px; }
+
+.panel {
+  background: #fff;
+  border: 1px solid #e6ebf0;
+  border-radius: 4px;
+  padding: 12px 14px 14px;
+  margin-bottom: 12px;
+}
+
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #14324a;
+  font-weight: 650;
+}
+
+.muted { color: #667887; font-size: 12px; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.customer-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.kyc-name { margin: 0; font-size: 20px; color: #14324a; }
+
+.click-row { cursor: pointer; }
+
+.sider-scroll { height: calc(100vh - 92px); overflow: auto; }
+
+.content-scroll {
+  height: calc(100vh - 56px);
+  overflow: auto;
+  padding: 16px;
+}
