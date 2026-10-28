@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>云创运营管理平台</title>
+  <style>
+    :root {
+      --navy: #0c2340;
+      --ink: #14324a;
+      --muted: #667887;
+      --line: #e6ebf0;
+      --bg: #f3f5f7;
+      --teal: #0f6e6b;
+      --gold: #b8860b;
+      --red: #c2453a;
+      --card: #fff;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: #1d2b36;
+      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+      font-size: 14px;
+    }
+    button, input, select, textarea { font-family: inherit; font-size: 13px; }
+    [hidden] { display: none !important; }
+    .app { display: flex; min-height: 100vh; }
+    .sider {
+      width: 228px;
+      flex: none;
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .logo { padding: 16px 16px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .logo .mark { font-size: 12px; letter-spacing: .12em; color: #8fd0cb; }
+    .logo .name { margin-top: 4px; font-size: 16px; font-weight: 650; line-height: 1.35; }
+    .logo .sub { margin-top: 4px; font-size: 12px; color: rgba(255,255,255,.62); }
+    .menu { padding: 8px 0 24px; overflow: auto; }
+    .nav-item, .nav-group {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; border: 0; background: transparent; color: rgba(255,255,255,.78);
+      text-align: left; padding: 10px 16px; cursor: pointer;
+    }
+    .nav-item.child { padding-left: 44px; font-size: 13px; }
+    .nav-item:hover, .nav-group:hover { color: #fff; }
+    .nav-item.active { background: var(--teal); color: #fff; }
+    .nav-group { color: rgba(255,255,255,.9); font-weight: 600; }
+    .ico { width: 16px; height: 16px; flex: none; opacity: .9; }
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .top {
+      height: 56px; background: #fff; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; gap: 12px;
+    }
+    .slogan { color: var(--ink); display: flex; align-items: center; gap: 8px; }
+    .scope {
+      display: inline-block; padding: 0 8px; line-height: 22px; border-radius: 4px;
+      background: #e8f3ff; color: #1677ff; font-size: 12px;
+    }
+    .role-box { display: flex; align-items: center; gap: 8px; }
+    .role-box select, .field input, .field select, .field textarea, .search input {
+      height: 32px; border: 1px solid #d9d9d9; border-radius: 4px; padding: 0 10px; background: #fff; color: var(--ink);
+    }
+    .role-box select { width: 220px; }
+    .content { height: calc(100vh - 56px); overflow: auto; padding: 16px; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .page-head h1 { margin: 0; font-size: 18px; font-weight: 650; color: var(--ink); }
+    .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .stat { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 4px; padding: 12px 14px; min-height: 86px; }
+    .stat.navy { border-top-color: #143f66; }
+    .stat.gold { border-top-color: var(--gold); }
+    .stat.red { border-top-color: var(--red); }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-value { margin-top: 4px; font-size: 26px; line-height: 1.2; color: var(--ink); font-weight: 650; }
+    .stat-extra { margin-top: 4px; color: #7d8b96; font-size: 12px; }
+    .split { display: grid; grid-template-columns: 1.4fr .8fr; gap: 12px; }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px 14px; margin-bottom: 12px; }
+    .panel h2 { margin: 0 0 10px; font-size: 14px; color: var(--ink); font-weight: 650; }
+    .muted { color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; background: #fafafa; color: #5c6b76; font-weight: 600; }
+    th, td { border-bottom: 1px solid #f0f0f0; padding: 8px 10px; vertical-align: middle; }
+    tr.click { cursor: pointer; }
+    tr.click:hover td { background: #f7fbfb; }
+    .tag { display: inline-block; padding: 0 7px; line-height: 20px; border-radius: 4px; font-size: 12px; border: 1px solid transparent; white-space: nowrap; }
+    .tag.red { color: #c2453a; background: #fff1f0; border-color: #ffccc7; }
+    .tag.green { color: #0f6e6b; background: #e7f6f4; border-color: #b7e4df; }
+    .tag.blue { color: #143f66; background: #e8f1fb; border-color: #c5d8ef; }
+    .tag.gold { color: #8a6a12; background: #fff7e6; border-color: #ffe7ba; }
+    .tag.gray { color: #5c6b76; background: #f5f7f8; border-color: #e6ebf0; }
+    .btn {
+      height: 32px; padding: 0 12px; border-radius: 4px; border: 1px solid #d9d9d9;
+      background: #fff; color: var(--ink); cursor: pointer;
+    }
+    .btn:hover { border-color: var(--teal); color: var(--teal); }
+    .btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .btn.primary:hover { background: #0c5c59; color: #fff; }
+    .btn-row, .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field.span2 { grid-column: span 2; }
+    .field label { color: #3d5160; font-size: 12px; }
+    .field textarea { height: 88px; padding: 8px 10px; resize: vertical; }
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+    .tab { border: 0; background: transparent; padding: 8px 14px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; }
+    .tab.on { color: var(--teal); border-bottom-color: var(--teal); font-weight: 650; }
+    .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: 13px; }
+    .kv b { color: var(--muted); font-weight: 500; }
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: grid; grid-template-columns: 72px 1fr 36px; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+    .bar { height: 8px; background: #eef2f4; border-radius: 99px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: var(--teal); border-radius: 99px; }
+    .kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .col { background: #f7f9fa; border: 1px solid var(--line); border-radius: 4px; padding: 10px; min-height: 220px; }
+    .col h3 { margin: 0 0 8px; font-size: 13px; color: var(--ink); }
+    .card {
+      background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--red);
+      border-radius: 4px; padding: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .card strong { display: block; color: var(--ink); font-size: 13px; }
+    .chat { display: flex; flex-direction: column; gap: 10px; min-height: 280px; }
+    .bubble { max-width: 72%; padding: 8px 12px; border-radius: 8px; line-height: 1.55; font-size: 13px; }
+    .bubble.user { margin-left: auto; background: #e7f6f4; color: var(--ink); }
+    .bubble.bot { background: #fff; border: 1px solid var(--line); }
+    .composer { display: flex; gap: 8px; margin-top: 12px; }
+    .composer input { flex: 1; }
+    .ok { background: #f6ffed; border: 1px solid #b7eb8f; color: #135200; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; }
+    .steps { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .step { padding: 6px 10px; border-radius: 99px; background: #f5f7f8; color: var(--muted); font-size: 12px; }
+    .step.on { background: #e7f6f4; color: var(--teal); font-weight: 650; }
+    .step.done { background: #f6ffed; color: #237804; }
+    @media (max-width: 1100px) {
+      .stat-grid, .split, .grid-2, .grid-3, .kanban { grid-template-columns: 1fr; }
+      .sider { width: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sider">
+      <div class="logo">
+        <div class="mark">YUNCHUANG</div>
+        <div class="name">云创运营管理平台</div>
+        <div class="sub">财资客户服务</div>
+      </div>
+      <nav class="menu">
+        <button class="nav-item active" data-page="workbench"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z"/></svg>工作台</button>
+        <div class="nav-group"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M8 8a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-5 6a5 5 0 0 1 10 0z"/></svg>客户管理</div>
+        <button class="nav-item child" data-page="customers">客户列表</button>
+        <button class="nav-item child" data-page="archive">新增客户档案</button>
+        <button class="nav-item child" data-page="key">重保客户管理</button>
+        <button class="nav-item child" data-page="ownership">一线管户列表</button>
+        <div class="nav-group"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z"/></svg>经营服务</div>
+        <button class="nav-item child" data-page="tickets">工单</button>
+        <button class="nav-item child" data-page="types">工单类型</button>
+        <button class="nav-item child" data-page="exposure">晾晒看板</button>
+        <button class="nav-item child" data-page="impl">实施过程管理</button>
+        <button class="nav-item child" data-page="ai">AI智能问答</button>
+        <button class="nav-item child" data-page="aitest">AI测试自动化</button>
+        <button class="nav-item child" data-page="logs">服务日志</button>
+        <button class="nav-item child" data-page="direct">直联参数</button>
+        <button class="nav-item child" data-page="biz">业务参数</button>
+        <button class="nav-item" data-page="cockpit"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M2 12h3V7H2zm4.5 0h3V4h-3zM11 12h3V2h-3z"/></svg>数据驾驶舱</button>
+        <button class="nav-item" data-page="knowledge"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M3 2h7l3 3v9H3zM9 2v4h4"/></svg>知识库</button>
+        <div class="nav-group"><svg class="ico" viewBox="0 0 16 16"><path fill="currentColor" d="M8 2l1.2 2.2 2.5.4-1.8 1.8.4 2.5L8 7.8 5.7 8.9l.4-2.5L4.3 4.6l2.5-.4z"/></svg>系统设置</div>
+        <button class="nav-item child" data-page="users">用户管理</button>
+        <button class="nav-item child" data-page="roles">角色管理</button>
+        <button class="nav-item child" data-page="branches">分行管理</button>
+        <button class="nav-item child" data-page="dicts">字典管理</button>
+      </nav>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div class="slogan">服务可看、可管理、可提效 <span class="scope" id="scope">数据范围：深圳分行</span></div>
+        <div class="role-box">
+          <span class="muted">演示角色</span>
+          <select id="role" aria-label="演示角色">
+            <option value="frontline">一线实施顾问 · 李敏</option>
+            <option value="leader">分行组长 · 周衡</option>
+            <option value="central">集中运营 · 陈可</option>
+            <option value="director">部门总 · 赵宁</option>
+          </select>
+        </div>
+      </header>
+      <div class="content">
+
+        <section class="view" id="wb-front">
+          <div class="page-head">
+            <div>
+              <h1>一线个人工作台</h1>
+              <p>云创科技 / 运营部 / 华南区 / 深圳分行。管户客户、名下工单和实施项目。待开通档案会留在待办里，等应管回填租户号。</p>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-label">管户客户</div><div class="stat-value">3</div><div class="stat-extra">要客级 2 · 待开通 0</div></div>
+            <div class="stat navy"><div class="stat-label">名下工单</div><div class="stat-value">7</div><div class="stat-extra">待接收 1 · 进行中 2</div></div>
+            <div class="stat"><div class="stat-label">实施主单</div><div class="stat-value">1</div><div class="stat-extra">共 1 个项目</div></div>
+            <div class="stat gold"><div class="stat-label">待办</div><div class="stat-value">1</div><div class="stat-extra">待开通档案与待接收下发</div></div>
+          </div>
+          <div class="panel">
+            <h2>快捷访问</h2>
+            <div class="btn-row">
+              <button class="btn" data-page="archive">新增客户档案</button>
+              <button class="btn" data-page="logs">新增服务日志</button>
+              <button class="btn" data-page="ai">AI 问答</button>
+              <button class="btn" data-page="tickets">下发工单</button>
+              <button class="btn" data-page="impl">实施过程</button>
+            </div>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <h2>管户客户</h2>
+              <table>
+                <thead><tr><th>企业</th><th>定级</th><th>认证</th><th>服务阶段</th></tr></thead>
+                <tbody>
+                  <tr class="click" data-page="cust-hr"><td>华润置地有限公司</td><td><span class="tag red">要客级</span></td><td><span class="tag green">已开通</span></td><td>实施中</td></tr>
+                  <tr class="click" data-page="customers"><td>万科企业股份有限公司</td><td><span class="tag blue">重点级</span></td><td><span class="tag green">已开通</span></td><td>售后中</td></tr>
+                  <tr class="click" data-page="customers"><td>招商局蛇口工业区控股股份有限公司</td><td><span class="tag red">要客级</span></td><td><span class="tag green">已开通</span></td><td>无在途工单</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="panel">
+                <h2>工单状态</h2>
+                <table>
+                  <thead><tr><th>状态</th><th>数量</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="tag blue">实施中</span></td><td>1</td></tr>
+                    <tr><td><span class="tag blue">进行中</span></td><td>2</td></tr>
+                    <tr><td><span class="tag gold">待接收</span></td><td>1</td></tr>
+                    <tr><td><span class="tag green">已完成</span></td><td>1</td></tr>
+                    <tr><td><span class="tag gray">处理中</span></td><td>1</td></tr>
+                    <tr><td><span class="tag gray">待分配</span></td><td>1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="panel">
+                <h2>待接收</h2>
+                <table>
+                  <thead><tr><th>单号</th><th>标题</th><th>发起</th></tr></thead>
+                  <tbody>
+                    <tr class="click" data-page="ticket-t07"><td>T07-20261027-023</td><td>华润置地权限码治理协作</td><td>孙琪</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="wb-leader" hidden>
+          <div class="page-head">
+            <div>
+              <h1>分行组长工作台</h1>
+              <p>深圳分行全量客户、实施中项目和定级复核。变更定级需组长同意后才生效。</p>
+            </div>
+            <button class="btn primary" data-page="ownership">批量移交管护</button>
+          </div>
+          <div class="tabs" data-group="leader">
+            <button class="tab on" data-group="leader" data-tab="branch">分行全量</button>
+            <button class="tab" data-group="leader" data-tab="person">个人工作台</button>
+          </div>
+          <div class="tab-panel" data-group="leader" data-tab="branch">
+            <div class="stat-grid">
+              <div class="stat"><div class="stat-label">管户客户总数</div><div class="stat-value">6</div><div class="stat-extra">待开通 1</div></div>
+              <div class="stat navy"><div class="stat-label">实施客户</div><div class="stat-value">1</div><div class="stat-extra">实施中的主单客户</div></div>
+              <div class="stat"><div class="stat-label">工单总数</div><div class="stat-value">11</div><div class="stat-extra">不含实施子单</div></div>
+              <div class="stat gold"><div class="stat-label">定级待复核</div><div class="stat-value">1</div><div class="stat-extra">深圳燃气 重点级 → 要客级</div></div>
+            </div>
+            <div class="panel">
+              <h2>实施客户</h2>
+              <table>
+                <thead><tr><th>企业</th><th>定级</th><th>管护人</th><th>阶段</th></tr></thead>
+                <tbody>
+                  <tr class="click" data-page="cust-hr"><td>华润置地有限公司</td><td><span class="tag red">要客级</span></td><td>李敏</td><td>实施执行</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" data-group="leader" data-tab="person" hidden>
+            <div class="filters"><span>查看成员</span><select><option>李敏 · 一线实施顾问</option><option>周衡 · 分行组长</option></select></div>
+            <div class="panel"><h2>李敏的个人工作台</h2><p class="muted">管户 3 户，名下工单 7 张，待接收下发 1 张。与一线工作台同一套数字。</p></div>
+          </div>
+        </section>
+
+        <section class="view" id="wb-central" hidden>
+          <div class="page-head">
+            <div>
+              <h1>集中运营工作台</h1>
+              <p>实施组与技术支持共用这个入口。待分配池可以批量派单，处理中的单可以批量转派。转派后 SLA 重新计时。</p>
+            </div>
+            <span class="tag blue">当前身份 陈可 · 技术支持</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-label">待处理</div><div class="stat-value">4</div><div class="stat-extra">待分配 1 · 处理中 2</div></div>
+            <div class="stat navy"><div class="stat-label">今日新增</div><div class="stat-value">3</div><div class="stat-extra">不含范式生成的子单</div></div>
+            <div class="stat"><div class="stat-label">平均处理时长</div><div class="stat-value">6.4</div><div class="stat-extra">已关闭工单，单位小时</div></div>
+            <div class="stat gold"><div class="stat-label">我的在办</div><div class="stat-value">2</div><div class="stat-extra">处理人是陈可</div></div>
+          </div>
+          <div class="panel">
+            <div class="btn-row">
+              <select><option>孙琪 · 在线客服</option><option>吴迪 · 集中实施</option><option>陈可 · 技术支持</option></select>
+              <button class="btn primary" id="assign">批量派单</button>
+              <button class="btn" id="transfer">批量转派</button>
+              <button class="btn" data-page="tickets">新建下发</button>
+              <button class="btn" data-page="exposure">晾晒</button>
+              <button class="btn" data-page="impl">实施过程</button>
+            </div>
+            <p class="ok" id="assign-ok" hidden>已把勾选工单派给孙琪，SLA 从现在重新计时。</p>
+            <table>
+              <thead><tr><th></th><th>单号</th><th>类型</th><th>标题</th><th>状态</th><th>处理人</th><th>分行</th></tr></thead>
+              <tbody>
+                <tr><td><input type="checkbox" class="pick" checked /></td><td>T10-20261028-034</td><td>T10</td><td>九州通直联心跳中断</td><td><span class="tag gold">待分配</span></td><td>—</td><td>武汉</td></tr>
+                <tr class="click" data-page="ticket-t07"><td></td><td>T07-20261027-023</td><td>T07</td><td>华润置地权限码治理协作</td><td><span class="tag gold">待接收</span></td><td>李敏</td><td>深圳</td></tr>
+                <tr><td><input type="checkbox" class="pick" /></td><td>T09-20261028-029</td><td>T09</td><td>万科电子回单批量下载失败</td><td><span class="tag gray">处理中</span></td><td>陈可</td><td>深圳</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="wb-director" hidden>
+          <div class="page-head">
+            <div>
+              <h1>运营工作台</h1>
+              <p>运营部整体的客户、工单和实施。超时下发进晾晒，供部门管理者跟进。</p>
+            </div>
+            <button class="btn primary" data-page="exposure">打开晾晒</button>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-label">客户档案</div><div class="stat-value">13</div><div class="stat-extra">要客级 5</div></div>
+            <div class="stat navy"><div class="stat-label">在途工单</div><div class="stat-value">16</div><div class="stat-extra">不含子单</div></div>
+            <div class="stat"><div class="stat-label">实施中项目</div><div class="stat-value">2</div><div class="stat-extra">PE01 未结项</div></div>
+            <div class="stat red"><div class="stat-label">下发超时</div><div class="stat-value">2</div><div class="stat-extra">下发完成率 64%</div></div>
+          </div>
+          <div class="panel">
+            <h2>需要晾晒的下发</h2>
+            <table>
+              <thead><tr><th>单号</th><th>类型</th><th>标题</th><th>城市</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr class="click" data-page="exposure"><td>T14-20261006-016</td><td>T14</td><td>九州通活跃度下滑专项调研</td><td>武汉</td><td><span class="tag red">进行中 · 超时</span></td></tr>
+                <tr class="click" data-page="exposure"><td>T08-20261015-018</td><td>T08</td><td>陕西煤业 C7 迁移</td><td>西安</td><td><span class="tag red">待接收 · 超时</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="customers" hidden>
+          <div class="page-head">
+            <div>
+              <h1>客户列表</h1>
+              <p>深圳分行可见档案。点企业名称进入企业视图。待开通档案还不能建服务单。</p>
+            </div>
+            <button class="btn primary" data-page="archive">新增客户档案</button>
+          </div>
+          <div class="filters">
+            <span class="search"><input placeholder="企业名称 / 档案号" /></span>
+            <select><option>全部定级</option><option>要客级</option><option>重点级</option><option>潜力级</option></select>
+            <select><option>全部认证</option><option>已开通</option><option>待开通</option></select>
+          </div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>档案号</th><th>企业名称</th><th>分行</th><th>认证</th><th>定级</th><th>管护人</th><th>服务阶段</th><th>完备度</th></tr></thead>
+              <tbody>
+                <tr class="click" data-page="cust-hr"><td>DA-SZ-0018</td><td>华润置地有限公司</td><td>深圳</td><td><span class="tag green">已开通</span></td><td><span class="tag red">要客级</span></td><td>李敏</td><td>实施中</td><td>96%</td></tr>
+                <tr class="click" data-page="customers"><td>DA-SZ-0021</td><td>万科企业股份有限公司</td><td>深圳</td><td><span class="tag green">已开通</span></td><td><span class="tag blue">重点级</span></td><td>李敏</td><td>售后中</td><td>88%</td></tr>
+                <tr><td>DA-SZ-0033</td><td>顺丰控股股份有限公司</td><td>深圳</td><td><span class="tag green">已开通</span></td><td><span class="tag red">要客级</span></td><td>周衡</td><td>经营中</td><td>91%</td></tr>
+                <tr><td>DA-SZ-0040</td><td>深圳燃气 <span class="tag gold">定级待复核</span></td><td>深圳</td><td><span class="tag gold">待开通</span></td><td><span class="tag blue">重点级</span></td><td>李敏</td><td>待开通</td><td>62%</td></tr>
+                <tr><td>DA-SZ-0044</td><td>深圳迈瑞生物医疗电子股份有限公司</td><td>深圳</td><td><span class="tag green">已开通</span></td><td><span class="tag gold">潜力级</span></td><td>周衡</td><td>售后中</td><td>74%</td></tr>
+                <tr><td>DA-SZ-0012</td><td>招商局蛇口工业区控股股份有限公司</td><td>深圳</td><td><span class="tag green">已开通</span></td><td><span class="tag red">要客级</span></td><td>李敏</td><td>无在途工单</td><td>93%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="cust-hr" hidden>
+          <div class="page-head">
+            <div>
+              <h1>华润置地有限公司</h1>
+              <p>档案 DA-SZ-0018 · 深圳分行 · 管护人 李敏 · 房地产业 · 国央企／上市</p>
+            </div>
+            <div class="btn-row">
+              <span class="tag red">要客级</span>
+              <span class="tag green">已开通</span>
+              <button class="btn" data-page="impl">实施过程</button>
+              <button class="btn primary" data-page="logs">记一笔服务日志</button>
+            </div>
+          </div>
+          <div class="tabs">
+            <button class="tab on" data-group="hr" data-tab="profile">企业概况</button>
+            <button class="tab" data-group="hr" data-tab="tags">客户标签</button>
+            <button class="tab" data-group="hr" data-tab="market">营销信息</button>
+            <button class="tab" data-group="hr" data-tab="ops">运营服务</button>
+            <button class="tab" data-group="hr" data-tab="product">产品服务</button>
+          </div>
+          <div class="tab-panel" data-group="hr" data-tab="profile">
+            <div class="grid-2">
+              <div class="panel">
+                <h2>档案</h2>
+                <div class="kv">
+                  <b>统一社会信用代码</b><span>91440300192191415X</span>
+                  <b>租户号</b><span>CR-SZ-10086</span>
+                  <b>行业</b><span>房地产业</span>
+                  <b>分行</b><span>深圳</span>
+                  <b>认证</b><span>已开通 · 2026-09-02</span>
+                  <b>完备度</b><span>96%</span>
+                </div>
+              </div>
+              <div class="panel">
+                <h2>实施材料</h2>
+                <table>
+                  <thead><tr><th>节点</th><th>文件</th><th>必传</th><th>时间</th></tr></thead>
+                  <tbody>
+                    <tr><td>P0-P1</td><td>项目实施方案</td><td>是</td><td>2026-09-06</td></tr>
+                    <tr><td>P0-P1</td><td>项目排期计划表</td><td>是</td><td>2026-09-06</td></tr>
+                    <tr><td>调研</td><td>司库账户与支付路径调研</td><td>否</td><td>2026-09-03</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel" data-group="hr" data-tab="tags" hidden>
+            <div class="panel">
+              <h2>实施定级</h2>
+              <p>当前 <span class="tag red">要客级</span>。标签：总分战、国央企／上市、招行价值标签、定开客户。</p>
+              <div class="filters">
+                <select><option>要客级</option><option>重点级</option><option>潜力级</option></select>
+                <button class="btn">提交定级变更</button>
+                <span class="muted">一线提交后进入组长复核，同意前不生效。</span>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel" data-group="hr" data-tab="market" hidden>
+            <div class="panel"><h2>营销信息</h2><p>来源：分行推荐。意向产品：司库、多级账簿、银企直联。最近拜访 2026-10-20，纪要已挂在服务日志。</p></div>
+          </div>
+          <div class="tab-panel" data-group="hr" data-tab="ops" hidden>
+            <div class="panel">
+              <h2>在途服务</h2>
+              <table>
+                <thead><tr><th>单号</th><th>类型</th><th>标题</th><th>状态</th></tr></thead>
+                <tbody>
+                  <tr class="click" data-page="impl"><td>PE01-20260902-001</td><td>PE01</td><td>华润置地司库实施</td><td><span class="tag blue">实施中</span></td></tr>
+                  <tr class="click" data-page="ticket-t07"><td>T07-20261027-023</td><td>T07</td><td>华润置地权限码治理协作</td><td><span class="tag gold">待接收</span></td></tr>
+                  <tr><td>T09-20261024-028</td><td>T09</td><td>华润置地支付指令状态不一致</td><td><span class="tag gray">处理中</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-panel" data-group="hr" data-tab="product" hidden>
+            <div class="panel"><h2>已开通产品</h2><p>银企直联（工行、招行）、电子回单、司库账户可视。移动审批仍在实施排期。</p></div>
+          </div>
+        </section>
+
+        <section class="view" id="archive" hidden>
+          <div class="page-head">
+            <div>
+              <h1>新增客户档案</h1>
+              <p>建档后认证状态为待开通。应管回填租户号之前，档案留在待办，不能单独开售后单。</p>
+            </div>
+          </div>
+          <form class="panel" id="archive-form">
+            <p class="ok" id="archive-ok" hidden>档案已保存为待开通，并出现在一线待办。演示数据只留在这个页面里。</p>
+            <div class="grid-2">
+              <div class="field"><label>企业名称</label><input id="co-name" required placeholder="请输入营业执照名称" value="深圳华侨城股份有限公司" /></div>
+              <div class="field"><label>统一社会信用代码</label><input required value="9144030019222292XL" /></div>
+              <div class="field"><label>分行</label><select><option>深圳</option><option>上海</option><option>北京</option></select></div>
+              <div class="field"><label>行业</label><select><option>房地产业</option><option>制造业</option><option>金融业</option></select></div>
+              <div class="field"><label>建议定级</label><select><option>重点级</option><option>要客级</option><option>潜力级</option></select></div>
+              <div class="field"><label>管护人</label><select><option>李敏</option><option>周衡</option></select></div>
+              <div class="field span2"><label>建档说明</label><textarea>分行推荐的文旅集团，先建档，等应管开通租户号后再排实施。</textarea></div>
+            </div>
+            <button class="btn primary" type="submit">保存档案</button>
+          </form>
+        </section>
+
+        <section class="view" id="key" hidden>
+          <div class="page-head"><div><h1>重保客户管理</h1><p>要客级客户单独看管。拜访、调研和流失预警从这里进工单。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>企业</th><th>分行</th><th>管护人</th><th>最近服务</th><th>风险</th></tr></thead>
+              <tbody>
+                <tr class="click" data-page="cust-hr"><td>华润置地有限公司</td><td>深圳</td><td>李敏</td><td>权限码治理待接收</td><td><span class="tag green">正常</span></td></tr>
+                <tr><td>顺丰控股股份有限公司</td><td>深圳</td><td>周衡</td><td>高峰期支付体验调研</td><td><span class="tag green">正常</span></td></tr>
+                <tr><td>招商局蛇口工业区控股股份有限公司</td><td>深圳</td><td>李敏</td><td>无在途</td><td><span class="tag gold">30 天无拜访</span></td></tr>
+                <tr><td>新希望控股集团有限公司</td><td>成都</td><td>周衡</td><td>四季度要客拜访</td><td><span class="tag green">正常</span></td></tr>
+                <tr><td>国家能源投资集团有限责任公司</td><td>北京</td><td>陈可</td><td>直联增量上线</td><td><span class="tag green">正常</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="ownership" hidden>
+          <div class="page-head"><div><h1>一线管户列表</h1><p>组长可以把勾选客户批量移交给另一位顾问。移交只改管护人，不改分行。</p></div></div>
+          <div class="panel">
+            <div class="btn-row">
+              <select id="owner-to"><option>周衡</option><option>李敏</option></select>
+              <button class="btn primary" id="handover" type="button">批量移交</button>
+            </div>
+            <p class="ok" id="handover-ok" hidden>已把勾选客户的管护人改为周衡。</p>
+            <table>
+              <thead><tr><th></th><th>企业</th><th>定级</th><th>当前管护人</th><th>在途工单</th></tr></thead>
+              <tbody>
+                <tr><td><input type="checkbox" class="own" /></td><td>华润置地有限公司</td><td><span class="tag red">要客级</span></td><td>李敏</td><td>2</td></tr>
+                <tr><td><input type="checkbox" class="own" checked /></td><td>万科企业股份有限公司</td><td><span class="tag blue">重点级</span></td><td>李敏</td><td>1</td></tr>
+                <tr><td><input type="checkbox" class="own" /></td><td>招商局蛇口工业区控股股份有限公司</td><td><span class="tag red">要客级</span></td><td>李敏</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="tickets" hidden>
+          <div class="page-head">
+            <div><h1>工单</h1><p>下发七类由集中或部门发起。一线可建直联、远程实施，售后单必须先过 AI 问答。</p></div>
+            <button class="btn primary" id="new-ticket" type="button">新建下发</button>
+          </div>
+          <div class="panel" id="ticket-form" hidden>
+            <h2>下发工单</h2>
+            <div class="grid-2">
+              <div class="field"><label>类型</label><select><option>T07 业务协作</option><option>T02 新品推介</option><option>T12 要客拜访</option><option>T01 CBS营销</option></select></div>
+              <div class="field"><label>客户</label><select><option>华润置地有限公司</option><option>万科企业股份有限公司</option></select></div>
+              <div class="field span2"><label>标题</label><input id="ticket-title" value="华润置地分批升级窗口确认" /></div>
+              <div class="field span2"><label>要求说明</label><textarea>请一线在本周五前确认权限码分批升级窗口，并回传客户确认。</textarea></div>
+            </div>
+            <button class="btn primary" id="save-ticket" type="button">下发</button>
+          </div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>单号</th><th>类型</th><th>标题</th><th>客户</th><th>状态</th><th>处理人</th></tr></thead>
+              <tbody id="ticket-body">
+                <tr class="click" data-page="ticket-t07"><td>T07-20261027-023</td><td>T07</td><td>华润置地权限码治理协作</td><td>华润置地</td><td><span class="tag gold">待接收</span></td><td>李敏</td></tr>
+                <tr class="click" data-page="impl"><td>PE01-20260902-001</td><td>PE01</td><td>华润置地司库实施</td><td>华润置地</td><td><span class="tag blue">实施中</span></td><td>李敏</td></tr>
+                <tr><td>T09-20261024-028</td><td>T09</td><td>华润置地支付指令状态不一致</td><td>华润置地</td><td><span class="tag gray">处理中</span></td><td>陈可</td></tr>
+                <tr><td>T09-20261028-029</td><td>T09</td><td>万科电子回单批量下载失败</td><td>万科</td><td><span class="tag gray">处理中</span></td><td>陈可</td></tr>
+                <tr><td>T12-20261020-020</td><td>T12</td><td>华润置地月度要客拜访</td><td>华润置地</td><td><span class="tag green">已完成</span></td><td>李敏</td></tr>
+                <tr><td>T02-20261022-021</td><td>T02</td><td>多级账簿功能推介（万科）</td><td>万科</td><td><span class="tag blue">进行中</span></td><td>李敏</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="ticket-t07" hidden>
+          <div class="page-head">
+            <div>
+              <h1>T07-20261027-023 华润置地权限码治理协作</h1>
+              <p>下发 · 集中 → 一线 · 接收时限 8 小时 · 处理时限 24 小时 · 发起人 孙琪</p>
+            </div>
+            <button class="btn primary" id="accept-ticket" type="button">接收</button>
+          </div>
+          <p class="ok" id="accept-ok" hidden>已接收。状态改为进行中，处理时限从现在起算 24 小时。</p>
+          <div class="grid-2">
+            <div class="panel">
+              <h2>工单内容</h2>
+              <div class="kv">
+                <b>客户</b><span>华润置地有限公司</span>
+                <b>状态</b><span id="t07-status"><span class="tag gold">待接收</span></span>
+                <b>证明材料</b><span>执行情况</span>
+                <b>场景</b><span>分批升级、权限码治理</span>
+                <b>要求</b><span>确认升级窗口，并回传客户侧权限码清单。</span>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>处理轨迹</h2>
+              <p>2026-10-27 16:20 孙琪 下发<br />2026-10-27 16:21 进入李敏待接收<br />尚未接收，已接近 8 小时时限。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="types" hidden>
+          <div class="page-head"><div><h1>工单类型</h1><p>下发、一线、系统和实施主单。T04、T11 不能单独创建，只能挂在 PE01 下面。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>编码</th><th>名称</th><th>阶段</th><th>流向</th><th>分组</th></tr></thead>
+              <tbody>
+                <tr><td>T01</td><td>CBS营销</td><td>营销</td><td>分行 → 一线</td><td>下发</td></tr>
+                <tr><td>T02</td><td>新品(功能)推介任务</td><td>营销/经营</td><td>部门 → 一线</td><td>下发</td></tr>
+                <tr><td>T03</td><td>直联上线工单</td><td>实施</td><td>一线 → 集中</td><td>一线</td></tr>
+                <tr><td>T07</td><td>业务协作</td><td>实施/售后</td><td>集中 → 一线</td><td>下发</td></tr>
+                <tr><td>T09</td><td>售后运维工单</td><td>售后</td><td>一线 → 集中</td><td>一线 · 须先 AI 问答</td></tr>
+                <tr><td>T12</td><td>要客拜访</td><td>经营</td><td>部门 → 一线</td><td>下发</td></tr>
+                <tr><td>PE01</td><td>项目实施工单</td><td>实施</td><td>集中 → 一线</td><td>主单</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="exposure" hidden>
+          <div class="page-head"><div><h1>晾晒看板</h1><p>下发工单超过接收或执行时限后进入晾晒。演示时钟停在 2026-10-28 15:00。</p></div></div>
+          <div class="kanban">
+            <div class="col">
+              <h3>待接收超时</h3>
+              <div class="card" data-page="exposure"><strong>T08-20261015-018</strong><span class="muted">陕西煤业 C7 迁移 · 西安 · 超时 13 天</span></div>
+            </div>
+            <div class="col">
+              <h3>执行超时</h3>
+              <div class="card" data-page="exposure"><strong>T14-20261006-016</strong><span class="muted">九州通活跃度下滑专项调研 · 武汉 · 超时 22 天</span></div>
+            </div>
+            <div class="col">
+              <h3>验收停留</h3>
+              <div class="card"><strong>暂无</strong><span class="muted">验收停留满 48 小时才会出现在这里。</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="impl" hidden>
+          <div class="page-head">
+            <div>
+              <h1>实施过程管理</h1>
+              <p>PE01-20260902-001 华润置地司库实施 · 要客级链路 · 标准 45 天 · 管护人 李敏</p>
+            </div>
+          </div>
+          <div class="steps">
+            <span class="step done">项目开通</span>
+            <span class="step done">实施计划登记</span>
+            <span class="step on">实施执行</span>
+            <span class="step">实施复核</span>
+            <span class="step">试运行</span>
+            <span class="step">交付结项</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-label">链路进度</div><div class="stat-value">4/9</div><div class="stat-extra">要客级标准步骤</div></div>
+            <div class="stat navy"><div class="stat-label">子工单</div><div class="stat-value">3</div><div class="stat-extra">直联、初始化、试运行</div></div>
+            <div class="stat"><div class="stat-label">必传材料</div><div class="stat-value">2/2</div><div class="stat-extra">第一节点已齐</div></div>
+            <div class="stat gold"><div class="stat-label">节点反馈</div><div class="stat-value">1</div><div class="stat-extra">下一节点：实施执行</div></div>
+          </div>
+          <div class="panel">
+            <h2>子工单</h2>
+            <table>
+              <thead><tr><th>单号</th><th>类型</th><th>标题</th><th>处理方</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>T03-子</td><td>T03</td><td>工行、招行直联上线</td><td>集中实施</td><td><span class="tag blue">进行中</span></td></tr>
+                <tr><td>T04-子</td><td>T04</td><td>司库初始化配置</td><td>集中实施</td><td><span class="tag gold">未开始</span></td></tr>
+                <tr><td>T11-子</td><td>T11</td><td>新客试运行维护</td><td>在线客服</td><td><span class="tag gray">未解锁</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="ai" hidden>
+          <div class="page-head"><div><h1>AI 智能问答</h1><p>售后提单前必须先问一轮。未得到可执行答案时，才能转成 T09 售后工单。</p></div></div>
+          <div class="panel">
+            <div class="chat" id="chat">
+              <div class="bubble bot">我是云创售后分诊。先描述客户现象、银行和产品，例如「华润置地，招行，支付指令状态不一致」。</div>
+            </div>
+            <div class="composer">
+              <input id="ask" placeholder="输入问题，回车发送" />
+              <button class="btn primary" id="ask-btn" type="button">发送</button>
+              <button class="btn" id="to-ticket" type="button" hidden>转售后工单</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="aitest" hidden>
+          <div class="page-head"><div><h1>AI 测试自动化</h1><p>分诊、拦截和实施范式的回归用例。失败项要先看断言，再改提示词。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>用例</th><th>模块</th><th>负责人</th><th>最近运行</th><th>结果</th></tr></thead>
+              <tbody>
+                <tr><td>直联证书到期问答</td><td>售后分诊</td><td>孙琪</td><td>2026-10-27 21:10</td><td><span class="tag green">通过</span></td></tr>
+                <tr><td>支付状态不一致转工单</td><td>售后分诊</td><td>孙琪</td><td>2026-10-27 21:12</td><td><span class="tag green">通过</span></td></tr>
+                <tr><td>未满一轮禁止转工单</td><td>拦截规则</td><td>陈可</td><td>2026-10-26 19:00</td><td><span class="tag green">通过</span></td></tr>
+                <tr><td>要客链路子单生成</td><td>实施范式</td><td>吴迪</td><td>2026-10-25 18:40</td><td><span class="tag red">失败</span></td></tr>
+                <tr><td>下发超期进入晾晒</td><td>SLA</td><td>赵宁</td><td>2026-10-28 08:00</td><td><span class="tag green">通过</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="logs" hidden>
+          <div class="page-head"><div><h1>服务日志</h1><p>拜访、远程和现场都记在客户时间线上，工时汇总进驾驶舱。</p></div><button class="btn primary" id="add-log" type="button">登记</button></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>日期</th><th>客户</th><th>阶段</th><th>方式</th><th>工时</th><th>内容</th><th>记录人</th></tr></thead>
+              <tbody id="log-body">
+                <tr><td>2026-10-20</td><td>华润置地</td><td>经营</td><td>拜访</td><td>3.0</td><td>月度要客拜访，确认司库上线窗口</td><td>李敏</td></tr>
+                <tr><td>2026-10-18</td><td>万科</td><td>售后</td><td>远程</td><td>1.5</td><td>电子回单批量下载失败复现</td><td>李敏</td></tr>
+                <tr><td>2026-10-11</td><td>顺丰控股</td><td>经营</td><td>调研</td><td>2.0</td><td>高峰期支付体验访谈</td><td>周衡</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="direct" hidden>
+          <div class="page-head"><div><h1>直联参数</h1><p>银行、证书和心跳阈值。改参数会留下变更记录，不直接改生产。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>参数</th><th>当前值</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td>证书到期预警</td><td>30 天</td><td>到期前生成 T10 监测单</td></tr>
+                <tr><td>心跳中断阈值</td><td>5 分钟</td><td>连续失败后告警</td></tr>
+                <tr><td>回单拉取批量</td><td>200 笔</td><td>超过则拆批</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="biz" hidden>
+          <div class="page-head"><div><h1>业务参数</h1><p>SLA 和验收停留。黄、红阈值是演示值，界面上会标明。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>参数</th><th>值</th><th>适用</th></tr></thead>
+              <tbody>
+                <tr><td>接收时限</td><td>8 小时</td><td>下发工单</td></tr>
+                <tr><td>处理时限</td><td>24 小时</td><td>下发执行</td></tr>
+                <tr><td>验收停留</td><td>48 小时</td><td>超时进晾晒</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="cockpit" hidden>
+          <div class="page-head"><div><h1>数据驾驶舱</h1><p>全行客户、在途工单和下发完成情况。数字相对演示时钟 2026-10-28 15:00。</p></div></div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-label">客户档案</div><div class="stat-value">13</div><div class="stat-extra">待开通 1</div></div>
+            <div class="stat navy"><div class="stat-label">在途工单</div><div class="stat-value">16</div><div class="stat-extra">今日新增 3</div></div>
+            <div class="stat"><div class="stat-label">实施中项目</div><div class="stat-value">2</div><div class="stat-extra">华润置地、吉利控股</div></div>
+            <div class="stat red"><div class="stat-label">晾晒</div><div class="stat-value">2</div><div class="stat-extra">下发完成率 64%</div></div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <h2>分分行在途工单</h2>
+              <div class="bars">
+                <div class="bar-row"><span>深圳</span><div class="bar"><i style="width:78%"></i></div><span>7</span></div>
+                <div class="bar-row"><span>杭州</span><div class="bar"><i style="width:34%"></i></div><span>3</span></div>
+                <div class="bar-row"><span>武汉</span><div class="bar"><i style="width:22%"></i></div><span>2</span></div>
+                <div class="bar-row"><span>西安</span><div class="bar"><i style="width:16%"></i></div><span>1</span></div>
+                <div class="bar-row"><span>北京</span><div class="bar"><i style="width:16%"></i></div><span>1</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>定级分布</h2>
+              <div class="bars">
+                <div class="bar-row"><span>要客级</span><div class="bar"><i style="width:62%"></i></div><span>5</span></div>
+                <div class="bar-row"><span>重点级</span><div class="bar"><i style="width:50%"></i></div><span>4</span></div>
+                <div class="bar-row"><span>潜力级</span><div class="bar"><i style="width:38%"></i></div><span>3</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="knowledge" hidden>
+          <div class="page-head"><div><h1>知识库</h1><p>售后分诊和实施口径。问答转工单时会引用这些条目。</p></div></div>
+          <div class="grid-2">
+            <article class="panel"><h2>支付指令状态不一致</h2><p class="muted">先核对银行回执和本地指令号。状态停留超过 15 分钟，再转 T09，并附上指令号与回单。</p></article>
+            <article class="panel"><h2>实施定级与三条实施链路</h2><p class="muted">要客级、重点级、潜力级对应不同步骤和标准天数。定级变更要组长复核。</p></article>
+            <article class="panel"><h2>售后工单必须先过 AI 问答</h2><p class="muted">未完成一轮问答不能建 T09。问答已经给出可执行步骤时，不建议转工单。</p></article>
+            <article class="panel"><h2>下发工单、超时与晾晒</h2><p class="muted">接收 8 小时、执行 24 小时、验收停留 48 小时。超时进入晾晒看板。</p></article>
+          </div>
+        </section>
+
+        <section class="view" id="users" hidden>
+          <div class="page-head"><div><h1>用户管理</h1><p>演示账号只切换右上角角色，不单独登录。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>姓名</th><th>角色</th><th>组织</th><th>分行</th></tr></thead>
+              <tbody>
+                <tr><td>李敏</td><td>一线实施顾问</td><td>运营部 / 华南区</td><td>深圳</td></tr>
+                <tr><td>周衡</td><td>分行组长</td><td>运营部 / 华南区</td><td>深圳</td></tr>
+                <tr><td>陈可</td><td>集中运营</td><td>运营部 / 技术支持</td><td>总行</td></tr>
+                <tr><td>孙琪</td><td>在线客服</td><td>运营部 / 在线</td><td>总行</td></tr>
+                <tr><td>吴迪</td><td>集中实施</td><td>运营部 / 实施组</td><td>总行</td></tr>
+                <tr><td>赵宁</td><td>部门总</td><td>运营部</td><td>总行</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="roles" hidden>
+          <div class="page-head"><div><h1>角色管理</h1><p>按钮是否可点由角色权限决定。这里只展示演示配置。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>能力</th><th>一线</th><th>组长</th><th>集中运营</th><th>部门总</th></tr></thead>
+              <tbody>
+                <tr><td>创建下发工单</td><td>—</td><td>—</td><td>可</td><td>可</td></tr>
+                <tr><td>接收并执行下发</td><td>可</td><td>可</td><td>—</td><td>—</td></tr>
+                <tr><td>售后 AI 问答转工单</td><td>可</td><td>可</td><td>—</td><td>—</td></tr>
+                <tr><td>批量派单 / 转派</td><td>—</td><td>—</td><td>可</td><td>—</td></tr>
+                <tr><td>复核实施定级</td><td>—</td><td>可</td><td>—</td><td>—</td></tr>
+                <tr><td>发起项目实施主单</td><td>可</td><td>可</td><td>可</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="branches" hidden>
+          <div class="page-head"><div><h1>分行管理</h1><p>数据范围按分行切。部门总看总行全量。</p></div></div>
+          <div class="panel">
+            <table>
+              <thead><tr><th>分行</th><th>区域</th><th>客户数</th><th>组长</th></tr></thead>
+              <tbody>
+                <tr><td>深圳</td><td>华南</td><td>6</td><td>周衡</td></tr>
+                <tr><td>上海</td><td>华东</td><td>1</td><td>—</td></tr>
+                <tr><td>杭州</td><td>华东</td><td>1</td><td>—</td></tr>
+                <tr><td>成都</td><td>西南</td><td>1</td><td>—</td></tr>
+                <tr><td>武汉</td><td>华中</td><td>1</td><td>—</td></tr>
+                <tr><td>北京</td><td>华北</td><td>1</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="dicts" hidden>
+          <div class="page-head"><div><h1>字典管理</h1><p>定级标签、行业和售后问题类型。停用后新建表单不再出现。</p></div></div>
+          <div class="grid-2">
+            <div class="panel"><h2>实施定级标签</h2><p>总分战、付费客户、国央企／上市、招行价值标签、定开客户、行业头部／专精特新、分行重点客户、机构部客户。</p></div>
+            <div class="panel"><h2>优先级</h2><p>紧急、高、中、低。下发默认中，监测告警默认高。</p></div>
+            <div class="panel"><h2>售后问题类型</h2><p>支付、回单、证书、余额查询、权限。转工单时必选。</p></div>
+            <div class="panel"><h2>AI 未解决原因</h2><p>知识未覆盖、需银行侧协查、需改参数、客户环境特殊。</p></div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </div>
+  <script>
+    (function () {
+      var rolePage = { frontline: "wb-front", leader: "wb-leader", central: "wb-central", director: "wb-director" };
+      var scopeText = { frontline: "数据范围：深圳分行", leader: "数据范围：深圳分行", central: "数据范围：总行全量", director: "数据范围：总行全量" };
+      var role = document.getElementById("role");
+      var scope = document.getElementById("scope");
+
+      function mark(id) {
+        var current = id === "workbench" ? rolePage[role.value] : id;
+        document.querySelectorAll(".view").forEach(function (view) { view.hidden = view.id !== current; });
+        document.querySelectorAll(".nav-item").forEach(function (item) {
+          var page = item.getAttribute("data-page");
+          var on = page === id || (id.indexOf("wb-") === 0 && page === "workbench") || (current === "cust-hr" && page === "customers") || (current === "ticket-t07" && page === "tickets");
+          item.classList.toggle("active", on);
+        });
+        var scroller = document.querySelector(".content");
+        if (scroller) scroller.scrollTop = 0;
+      }
+
+      document.body.addEventListener("click", function (event) {
+        var tab = event.target.closest("[data-tab]");
+        if (tab) {
+          var group = tab.getAttribute("data-group");
+          var name = tab.getAttribute("data-tab");
+          document.querySelectorAll('[data-group="' + group + '"]').forEach(function (el) {
+            if (el.classList.contains("tab")) el.classList.toggle("on", el.getAttribute("data-tab") === name);
+            if (el.classList.contains("tab-panel")) el.hidden = el.getAttribute("data-tab") !== name;
+          });
+          return;
+        }
+        var jump = event.target.closest("[data-page]");
+        if (jump) mark(jump.getAttribute("data-page"));
+      });
+
+      role.addEventListener("change", function () {
+        scope.textContent = scopeText[role.value];
+        mark("workbench");
+      });
+
+      document.getElementById("archive-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        document.getElementById("archive-ok").hidden = false;
+      });
+
+      document.getElementById("handover").addEventListener("click", function () {
+        document.getElementById("handover-ok").hidden = false;
+      });
+      document.getElementById("assign").addEventListener("click", function () {
+        document.getElementById("assign-ok").hidden = false;
+      });
+      document.getElementById("new-ticket").addEventListener("click", function () {
+        document.getElementById("ticket-form").hidden = false;
+      });
+      document.getElementById("save-ticket").addEventListener("click", function () {
+        var title = document.getElementById("ticket-title").value || "新建下发";
+        var row = document.createElement("tr");
+        row.innerHTML = "<td>T07-20261028-037</td><td>T07</td><td>" + title.replace(/[<>&]/g, "") + "</td><td>华润置地</td><td><span class=\"tag gold\">待接收</span></td><td>李敏</td>";
+        document.getElementById("ticket-body").prepend(row);
+        document.getElementById("ticket-form").hidden = true;
+      });
+      document.getElementById("accept-ticket").addEventListener("click", function () {
+        document.getElementById("t07-status").innerHTML = '<span class="tag blue">进行中</span>';
+        document.getElementById("accept-ok").hidden = false;
+      });
+      document.getElementById("add-log").addEventListener("click", function () {
+        var row = document.createElement("tr");
+        row.innerHTML = "<td>2026-10-28</td><td>华润置地</td><td>实施</td><td>远程</td><td>1.0</td><td>确认权限码升级窗口</td><td>李敏</td>";
+        document.getElementById("log-body").prepend(row);
+      });
+
+      function ask() {
+        var input = document.getElementById("ask");
+        var text = input.value.trim();
+        if (!text) return;
+        var chat = document.getElementById("chat");
+        var mine = document.createElement("div");
+        mine.className = "bubble user";
+        mine.textContent = text;
+        var bot = document.createElement("div");
+        bot.className = "bubble bot";
+        bot.textContent = "已查到知识：先核对银行回执和本地指令号。若状态停留超过 15 分钟，可以转 T09，并附上指令号。这一轮问答已完成，可以转售后工单。";
+        chat.appendChild(mine);
+        chat.appendChild(bot);
+        input.value = "";
+        document.getElementById("to-ticket").hidden = false;
+        chat.scrollTop = chat.scrollHeight;
+      }
+      document.getElementById("ask-btn").addEventListener("click", ask);
+      document.getElementById("ask").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") ask();
+      });
+      document.getElementById("to-ticket").addEventListener("click", function () {
+        mark("tickets");
+      });
+    })();
+  </script>
+</body>
+</html>
