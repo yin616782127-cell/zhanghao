@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './layout/AppLayout';
 import AiPage from './pages/AiPage';
 import AiTestPage from './pages/AiTestPage';
@@ -19,9 +19,13 @@ import TicketListPage from './pages/TicketListPage';
 import TicketTypePage from './pages/TicketTypePage';
 import WorkbenchPage from './pages/WorkbenchPage';
 
+const Router = typeof window !== 'undefined' && (window as Window & { __YC_HASH__?: boolean }).__YC_HASH__
+  ? HashRouter
+  : BrowserRouter;
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Navigate to="/workbench" replace />} />
@@ -54,6 +58,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/workbench" replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
