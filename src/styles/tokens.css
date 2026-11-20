@@ -1,0 +1,49 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  color: #17181a;
+  background: #1e2023;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --wb-teal: #08bfa0;
+  --wb-teal-dark: #009b82;
+  --wb-teal-soft: #e6f8f4;
+  --wb-black: #17181a;
+  --wb-gray-900: #25272a;
+  --wb-gray-700: #646970;
+  --wb-gray-500: #969ba2;
+  --wb-gray-300: #dcdfe3;
+  --wb-gray-200: #eceef1;
+  --wb-gray-100: #f6f7f8;
+  --wb-white: #ffffff;
+  --phone-radius: 44px;
+  --card-radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(8, 191, 160, 0.35);
+  outline-offset: 2px;
+}
